@@ -1,5 +1,8 @@
 import { NextPage } from "next";
 import { useState } from "react";
+import { api } from "@/utils/api";
+import { set } from "zod";
+import LoadingOverlay from "@/common/modules/components/LoadingOverlay/LoadingOverlay";
 
 const SignUp: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -7,82 +10,110 @@ const SignUp: NextPage = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
+  const { mutateAsync, isPending } = api.user.register.useMutation();
+
 
   const signUp = async () => {
     console.log(email, password, surname, name, passwordCheck);
+
+    if(password !== passwordCheck) {
+      console.log("hesla se neshodují");
+      return;
+    }
+    const response = await mutateAsync({
+      email: email,
+      password: password,
+      name: name,
+      surname: surname
+    });
+    if(response){
+      console.log("User created");
+    return;
+    }
+    setName("");
+    setSurname("");
+    setPasswordCheck("");
     setEmail("");
     setPassword("");
   };
 
   return (
+    <>
+    <LoadingOverlay isPending={isPending} />
     <div className="flex h-full min-h-full w-full items-center justify-center bg-gray-800 text-white">
-      <div className="flex min-h-[300px] flex-col gap-10 rounded-lg bg-gray-600 p-20 shadow-md">
+      <div className="flex min-h-[300px] flex-col gap-10 rounded-lg bg-gray-600 p-12 shadow-md">
         <div className="flex flex-col">
           <div className="flex flex-row">
-            <div className="relative">
+            <div className="relative my-2">
               <input
                 type="text"
                 id="default-search"
-                onBlur={(parametr) => {
+                onChange={(parametr) => {
                   setName(parametr.target.value);
                 }}
-                className="block w-full border-b bg-transparent  p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                placeholder="Jméno"
+                value={name}
+                className="w-full bg-gray-800 rounded-lg py-4 px-8 "
+                placeholder="name"
                 required
               />
             </div>
-            <div className="relative">
+            <div className="relative my-2">
               <input
                 type="text"
-                id="default-search"
-                onBlur={(parametr) => {
+                id="surname"
+                onChange={(parametr) => {
                   setSurname(parametr.target.value);
                 }}
-                className="block w-full border-b bg-transparent  p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-                placeholder="Příjmení"
+                value={surname}
+                className="w-full rounded-lg py-4 px-8 bg-gray-800"
+                placeholder="surname"
                 required
               />
             </div>
           </div>
-          <div className="relative">
+          <div className="relative my-2">
             <input
               type="text"
-              id="default-search"
-              onBlur={(parametr) => {
+              id="email"
+              onChange={(parametr) => {
                 setEmail(parametr.target.value);
               }}
-              className="block w-full border-b bg-transparent  p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+              value={email}
+              className="w-full rounded-lg py-4 px-8 bg-gray-800"
               placeholder="e-mail"
               required
             />
           </div>
-          <div className="relative">
+          <div className="relative my-2">
             <input
               type="password"
               id="default-search"
-              className="block w-full border-b  bg-transparent  p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-              placeholder="heslo"
+              className="w-full rounded-lg py-4 px-8 bg-gray-800"
+              placeholder="password"
               required
-              onBlur={(parametr) => {
+              onChange={(parametr) => {
                 setPassword(parametr.target.value);
               }}
+              value={password}
             />
           </div>
-          <div className="relative">
+          <div className="relative my-2">
             <input
               type="password"
-              id="default-search"
-              className="block w-full border-b  bg-transparent  p-4 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-              placeholder="Kontrola hesla"
+              id="confpassword"
+              className="w-full rounded-lg py-4 px-8 bg-gray-800"
+              placeholder="Confirm Password"
               required
-              onBlur={(parametr) => {
+              onChange={(parametr) => {
                 setPasswordCheck(parametr.target.value);
               }}
+              value={passwordCheck}
             />
           </div>
         </div>
 
         <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           onClick={async () => {
             await signUp();
             console.log("sign in");
@@ -92,6 +123,7 @@ const SignUp: NextPage = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

@@ -1,3 +1,4 @@
+import LoadingOverlay from "@/common/modules/components/LoadingOverlay/LoadingOverlay";
 import { NextPage } from "next";
 import { useState } from "react";
 
@@ -13,6 +14,7 @@ const SignIn: NextPage = () => {
 
   return (
     <div className="flex h-full min-h-full w-full items-center justify-center bg-gray-800 text-white">
+      <LoadingOverlay isPending={false} />
       <div className="flex min-h-[300px] flex-col gap-10 rounded-lg bg-gray-600 p-20 shadow-md">
         <div className="flex flex-col">
           <div className="relative">
